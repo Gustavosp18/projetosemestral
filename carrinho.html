@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="img/m.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" />
+    <title>Michael</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Font', sans-serif;
+            background-color: #f2f2f2;
+        }
+
+        header {
+            background-color: #f5eded;
+            color: white;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .logo img {
+            width: 100px;
+            height: auto;
+        }
+
+        .itens-carrinho {
+            margin: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .ttt {
+            width: 100%;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .ttt td {
+            font-weight: bold;
+            text-align: center;
+            padding: 8px;
+        }
+
+        .resumo {
+            margin: 20px;
+            background-color: #eee;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .textoresumo {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .fretes {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+        }
+
+        .cupom {
+            color: purple;
+            margin-bottom: 10px;
+        }
+
+        .total {
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        button {
+            background-color: #3498db;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        h1 {
+            background-color: #5F489D;
+        }
+        .tabelas, .tabelaNome {
+            display: flex;
+            justify-content: space-between;
+            margin: 0 200px;
+        }
+        .qtd {
+            margin-left: 80px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="logo">
+            <img src="img/m.png" alt="">
+        </div>
+        <h1>Carrinho de Compras</h1>
+    </header>
+
+    <div class="itens-carrinho">
+        <div class="tabelaNome">
+            <p>Produto</p>
+            <p class="qtd">Quantidade</p>
+            <p>Valor</p>
+        </div>
+        <div class="tabelas">
+
+            <table id="itens"></table>
+            <table id="itens2"></table>
+            <table id="itens3"></table>
+        </div>
+    </div>
+
+    <!-- Remova a div extra aqui -->
+
+    <div class="resumo">
+        <p class="textoresumo">Resumo das Compras</p>
+        <div>
+            <label for="cep">CEP:</label>
+            <input type="text" id="cep" placeholder="Digite seu CEP">
+            <button onclick="calcularFrete()">Calcular Frete</button>
+        </div>
+        <div id="freteInfo"></div>
+        <div>SubTotal: R$ <span id="subtotal" class="total"></span></div>
+        <div class="fretes">
+            <p class="frete">Frete: R$ <span id="frete"></span></p>
+            <p class="gratuito">Gratuito</p>
+        </div>
+        <p class="cupom">Adicionar cupom de desconto</p>
+        <div>Total: R$ <span id="totalGeral" class="total"></span></div>
+        <button type="button" onclick="limparCarrinho()">Limpar carrinho</button>
+        <button type="button">Finalizar Compra</button>
+    </div>
+
+
+    <script>
+        var subtotal = 0;
+
+        for (var i = 1; i <= 99; i++) {
+            var prod = localStorage.getItem("produto" + i);
+            if (prod != null) {
+                document.getElementById("itens").innerHTML +=
+                    localStorage.getItem("produto" + i) + "   ";
+                document.getElementById("itens2").innerHTML +=
+                    localStorage.getItem("qtd" + i) + "   ";
+                document.getElementById("itens3").innerHTML +=
+                    "R$: " + localStorage.getItem("valor" + i);
+
+                subtotal += parseFloat(localStorage.getItem("valor" + i));
+            }
+        }
+
+        var freteFixo = 12.80;
+        var total = subtotal + freteFixo;
+
+        // Atualize o subtotal
+        document.getElementById("subtotal").textContent = subtotal.toFixed(2);
+
+        // Atualize o valor do frete
+        document.getElementById("frete").textContent = freteFixo.toFixed(2);
+
+        // Atualize o total geral
+        document.getElementById("totalGeral").textContent = total.toFixed(2);
+
+        // Função para limpar o carrinho
+        function limparCarrinho() {
+            localStorage.clear();
+            location.reload();
+        }
+
+        function calcularFrete() {
+            var cepInput = document.getElementById("cep").value;
+            var freteInfo = document.getElementById("freteInfo");
+            var freteFixo = 12.80;
+            var freteGratisCEP = "20000-000";
+
+            // Limpa mensagens anteriores
+            freteInfo.innerHTML = "";
+
+            if (cepInput < freteGratisCEP.replace('-', '')) {
+                // Se o CEP for menor que 20000-000, o frete é gratuito
+                document.getElementById("frete").textContent = "0.00";
+                freteInfo.textContent = "Frete Gratuito!";
+            } else {
+                // Se o CEP for maior ou igual a 20000-000, cobrar frete fixo
+                document.getElementById("frete").textContent = freteFixo.toFixed(2);
+                freteInfo.textContent = "Frete: R$ " + freteFixo.toFixed(2);
+            }
+
+            // Restante do seu script...
+        }
+    </script>
+
+</body>
+
+</html>
